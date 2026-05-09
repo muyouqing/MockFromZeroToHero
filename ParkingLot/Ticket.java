@@ -1,6 +1,7 @@
+
 import java.time.Instant;
 
-import ParkingLot.Vehicle.Vehicle;
+import Vehicle.Vehicle;
 
 
 public class Ticket {

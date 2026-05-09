@@ -1,30 +1,41 @@
-package ParkingLot;
+
 import java.time.Instant;
 import java.util.*;
-
-import ParkingLot.Vehicle.SUV;
-import ParkingLot.Vehicle.Sadan;
-import ParkingLot.Vehicle.Truck;
-import ParkingLot.Vehicle.Vehicle;
+import Vehicle.*;
 
 public class ParkingLot {
     List<Level> levels;
-    Map<Vehicle, Integer> vehicleSizeMap;
+    Map<VehicleType, Integer> vehicleSizeMap;
 
     public ParkingLot(List<Level> levels) {
         this.levels = levels;
         this.vehicleSizeMap = new HashMap<>();
-        vehicleSizeMap.put(new Sadan(""), 1);
-        vehicleSizeMap.put(new SUV(""), 2);
-        vehicleSizeMap.put(new Truck(""), 3);
+        vehicleSizeMap.put(VehicleType.Sadan, 1);
+        vehicleSizeMap.put(VehicleType.SUV, 2);
+        vehicleSizeMap.put(VehicleType.Truck, 3);
     }
-    public Ticket park(Vehicle vehicle) {
-        int size = vehicleSizeMap.get(vehicle);
+    public Ticket park(Vehicle vehicle, boolean needHandicapped) {
+        boolean needElectric = vehicle.isElectric();
+        int size = vehicleSizeMap.get(vehicle.getVehicleType());
         for (Level level : levels) {
             for (ParkingSlot slot : level.getParkingSlots()) {
-                if (slot.isAvailable && size <= slot.size) {
+                //handicapped slot
+                if(needHandicapped && slot.isHandicapped && slot.isAvailable) {
                     slot.isAvailable = false;
                     return new Ticket(new Random().nextInt(), vehicle, slot);
+
+                }else {
+                    //electric slot
+                    if(needElectric && slot.isElectric && slot.isAvailable) {
+                        slot.isAvailable = false;
+                        return new Ticket(new Random().nextInt(), vehicle, slot);
+
+                    }else {
+                        if(slot.size >= size && slot.isAvailable) {
+                            slot.isAvailable = false;
+                            return new Ticket(new Random().nextInt(), vehicle, slot);
+                        }
+                    }
                 }
             }
         }
